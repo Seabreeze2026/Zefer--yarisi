@@ -1,0 +1,252 @@
+<!doctype html>
+<!--
+  Zəfər gününə həsr olunmuş intellektual yarış — komanda qeydiyyat formu
+  Açıq mənbə (MIT). Heç bir hesab tələb etmir. Məlumat Google Apps Script vasitəsilə
+  sizin Google Cədvəlinizə yazılır (bax: README.md və Code.gs).
+-->
+<html lang="az">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Zəfər Günü Yarışı — Komanda qeydiyyatı</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700&family=Oswald:wght@500;600;700&display=swap">
+<style>
+:root{
+  --bg:#FBFDFE; --surface:#FFFFFF; --ink:#1B3550; --muted:#667A8E; --line:#D3DFEA;
+  --blue:#7CC6E8; --blue-ink:#1580AF; --red:#EE8A92; --green:#86C089;
+  --btn:#8CCDEA; --btn-ink:#0B2F47; --soft:#F1F8FC; --danger-bg:#FEF5F6; --ok-bg:#F3FAF3;
+  --gold:#FAEBC0; --silver:#EDF1F5; --bronze:#F6DCC6; --medal-ink:#2B2110;
+  --display:'Oswald','Arial Narrow',Impact,sans-serif;
+  --body:'Manrope','Segoe UI',system-ui,sans-serif;
+  color-scheme:light;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#0A1522; --surface:#12263B; --ink:#E8EFF6; --muted:#9DB0C4; --line:#27405A;
+  --blue:#3CB6E6; --blue-ink:#5CC4EE; --red:#F0626F; --green:#6CBF6F;
+  --btn:#3CB6E6; --btn-ink:#06202F; --soft:#183450; --danger-bg:#3A1A22; --ok-bg:#163423;
+  --gold:#8A6D1C; --silver:#56677A; --bronze:#8A5A33; --medal-ink:#FFF4D6; color-scheme:dark}}
+
+*{box-sizing:border-box}
+html{background:var(--bg)}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--body);font-size:16px;line-height:1.55;
+  padding-block:0 56px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+.flag{position:fixed;inset:0 0 auto 0;height:calc(10px + env(safe-area-inset-top,0px));z-index:5;
+  background:linear-gradient(var(--blue) 0 33.4%,var(--red) 0 66.7%,var(--green) 0)}
+.wrap{max-width:760px;margin-inline:auto;padding-top:44px}
+.mast{padding-block:28px 8px}
+h1{margin:0;font:700 clamp(32px,8vw,58px)/1.05 var(--display);letter-spacing:.01em;text-transform:uppercase;text-wrap:balance}
+h1 span{display:block;font:500 clamp(18px,4.6vw,26px)/1.2 var(--display);letter-spacing:.08em;color:var(--muted);margin-top:10px}
+.facts{display:flex;flex-wrap:wrap;gap:8px;margin:20px 0 28px;padding:0;list-style:none}
+.facts li{background:var(--soft);border-radius:999px;padding:6px 14px;font-size:14px;font-weight:600}
+button:focus-visible,input:focus-visible,textarea:focus-visible,.pick:has(input:focus-visible){outline:3px solid var(--blue-ink);outline-offset:2px}
+
+.block{background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:22px;margin-top:16px}
+.block h2{margin:0 0 4px;font:600 21px/1.2 var(--display);letter-spacing:.04em;text-transform:uppercase}
+.hint{margin:0 0 16px;color:var(--muted);font-size:14px}
+label.f{display:block;font-weight:600;font-size:14px;margin:14px 0 6px}
+input[type=text],input[type=tel],textarea{width:100%;min-width:0;font:500 16px var(--body);color:var(--ink);
+  background:var(--bg);border:1px solid var(--line);border-radius:8px;padding:11px 12px}
+textarea{min-height:84px;resize:vertical}
+input::placeholder,textarea::placeholder{color:var(--muted);opacity:.75}
+.hp{position:absolute;left:-9999px;width:1px;height:1px;overflow:hidden}
+
+.kinds{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.pick{position:relative;display:block;border:1.5px solid var(--line);border-radius:10px;padding:14px 16px;cursor:pointer;background:var(--bg)}
+.pick input{position:absolute;opacity:0;inset:0;cursor:pointer;margin:0}
+.pick b{display:block;font-size:16px}
+.pick small{color:var(--muted);font-size:13px}
+.pick:has(input:checked){border-color:var(--blue-ink);background:var(--soft);box-shadow:inset 0 0 0 1px var(--blue-ink)}
+
+.rows{display:grid;gap:10px}
+.mrow{display:grid;grid-template-columns:34px 1fr auto;gap:10px;align-items:start}
+.mrow .no{width:34px;height:44px;display:grid;place-items:center;font:600 15px var(--display);color:var(--muted)}
+.mrow .fields{display:grid;gap:8px;min-width:0}
+.mrow.mixed .fields{grid-template-columns:1.4fr 1fr}
+.x{appearance:none;width:44px;height:44px;border:1px solid var(--line);background:none;color:var(--muted);border-radius:8px;font-size:20px;cursor:pointer}
+.x:hover{color:var(--ink);border-color:var(--red)}
+.ghost{appearance:none;background:none;border:1.5px dashed var(--line);color:var(--ink);border-radius:8px;padding:10px 14px;font:600 14px var(--body);cursor:pointer;margin-top:12px}
+.ghost:hover{border-color:var(--blue-ink)}
+.ghost[hidden]{display:none}
+
+.grid25{display:grid;grid-template-columns:repeat(5,1fr);gap:8px}
+.n{position:relative;display:block}
+.n input{position:absolute;opacity:0;inset:0;cursor:pointer;margin:0}
+.n span{display:grid;place-items:center;height:52px;border:1.5px solid var(--line);border-radius:8px;background:var(--bg);
+  font:600 22px var(--display);cursor:pointer}
+.n:nth-child(1) span{background:var(--gold);color:var(--medal-ink);border-color:transparent}
+.n:nth-child(2) span{background:var(--silver);color:var(--medal-ink);border-color:transparent}
+.n:nth-child(3) span{background:var(--bronze);color:var(--medal-ink);border-color:transparent}
+.n input:checked+span{background:var(--btn);color:var(--btn-ink);border-color:var(--blue-ink);box-shadow:0 0 0 3px var(--soft),0 0 0 5px var(--blue-ink)}
+.n:has(input:focus-visible){outline:3px solid var(--blue-ink);outline-offset:2px;border-radius:8px}
+.chosen{margin:12px 0 0;font-weight:600;min-height:1.5em}
+
+.go{appearance:none;width:100%;margin-top:22px;border:0;border-radius:10px;background:var(--btn);color:var(--btn-ink);
+  font:600 20px var(--display);letter-spacing:.08em;text-transform:uppercase;padding:16px;cursor:pointer}
+.go:disabled{opacity:.55;cursor:default}
+.msg{margin-top:14px;padding:12px 14px;border-radius:8px;font-weight:600;font-size:15px;color:var(--ink)}
+.msg.err{background:var(--danger-bg);border:1px solid var(--red)}
+.msg.ok{background:var(--ok-bg);border:1px solid var(--green)}
+.msg[hidden]{display:none}
+@media (max-width:560px){
+  .kinds{grid-template-columns:1fr}
+  .mrow.mixed .fields{grid-template-columns:1fr}
+  .block{padding:18px 16px}
+}
+@media (prefers-reduced-motion:no-preference){.pick,.n span,.go{transition:background .15s,border-color .15s}}
+</style>
+</head>
+<body>
+<div class="flag" aria-hidden="true"></div>
+<div class="wrap">
+  <header class="mast">
+    <h1>Zəfər gününə həsr olunmuş intellektual yarış<span>Komanda qeydiyyat formu</span></h1>
+    <ul class="facts">
+      <li>Tarix: 5 noyabr</li>
+      <li>Komanda 6-8 nəfər</li>
+      <li>Saat: 19:00</li>
+    </ul>
+  </header>
+
+  <form id="f" novalidate>
+    <section class="block">
+      <h2>Komanda</h2>
+      <p class="hint">Komandanın adını və haranı təmsil etdiyini qeyd edin.</p>
+      <label class="f" for="teamName">Komandanın adı</label>
+      <input type="text" id="teamName" maxlength="60" autocomplete="off" placeholder="Məsələn: Stars">
+      <label class="f" id="kindLabel">Komanda necə formalaşıb?</label>
+      <div class="kinds" role="radiogroup" aria-labelledby="kindLabel">
+        <label class="pick"><input type="radio" name="kind" id="kind-dept" value="dept"><b>Departament komandası</b><small>Bütün üzvlər eyni departamentdəndir</small></label>
+        <label class="pick"><input type="radio" name="kind" id="kind-mixed" value="mixed"><b>Qarışıq komanda</b><small>Üzvlər müxtəlif departamentlərdəndir</small></label>
+      </div>
+      <div id="deptWrap" hidden>
+        <label class="f" for="teamDept">Departamentin adı</label>
+        <input type="text" id="teamDept" maxlength="80" autocomplete="off" placeholder="Departamentin tam adı">
+      </div>
+      <label class="f" for="phone">Kapitanın əlaqə nömrəsi</label>
+      <input type="tel" id="phone" maxlength="30" autocomplete="off" placeholder="Mobil və ya daxili nömrə">
+    </section>
+
+    <section class="block">
+      <h2>İştirakçılar</h2>
+      <p class="hint">Soyad, ad və ata adını tam yazın. Birinci sətir komanda kapitanıdır.</p>
+      <div class="rows" id="rows"></div>
+      <button type="button" class="ghost" id="addRow">+ İştirakçı əlavə et</button>
+    </section>
+
+    <section class="block">
+      <h2>Proqnoz</h2>
+      <p class="hint">Oyunda 25 komanda iştirak edəcəyini fərz etsək, sizcə komandanız neçənci yer tutar?</p>
+      <div class="grid25" id="grid" role="radiogroup" aria-label="Proqnozlaşdırılan yer"></div>
+      <p class="chosen" id="chosen" aria-live="polite"></p>
+    </section>
+
+    <section class="block">
+      <label class="f" for="note" style="margin-top:0">Əlavə qeyd <span style="font-weight:500;color:var(--muted)">(vacib deyil)</span></label>
+      <textarea id="note" maxlength="400" placeholder="Təşkilatçılara çatdırmaq istədiyiniz məlumat"></textarea>
+      <div class="hp" aria-hidden="true"><label>Bu xananı boş buraxın <input type="text" id="website" tabindex="-1" autocomplete="off"></label></div>
+      <button type="submit" class="go" id="go">Komandanı qeydiyyatdan keçir</button>
+      <div class="msg err" id="err" role="alert" hidden></div>
+      <div class="msg ok" id="ok" role="status" hidden></div>
+    </section>
+  </form>
+</div>
+
+<script>
+/* ===== Ayarlar ===== */
+// Apps Script veb-tətbiqinin ünvanı (README.md-də 4-cü addım). "/exec" ilə bitir.
+const ENDPOINT = "https://script.google.com/macros/s/AKfycbymRwBcwwC7P_DXOeJt86qKwBMyhoMvH1rHkiszXLsthSN-3j3SfIWu2VVTF4CDCvmA/exec";
+const MAX_TEAMS = 25, MIN_PLAYERS = 6, MAX_PLAYERS = 8, START_ROWS = 6;
+/* =================== */
+
+const ORD = ['','1-ci','2-ci','3-cü','4-cü','5-ci','6-cı','7-ci','8-ci','9-cu','10-cu','11-ci','12-ci','13-cü','14-cü','15-ci','16-cı','17-ci','18-ci','19-cu','20-ci','21-ci','22-ci','23-cü','24-cü','25-ci'];
+const $ = s => document.querySelector(s);
+const esc = s => String(s == null ? '' : s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const st = { kind: '', guess: 0, members: Array.from({length: START_ROWS}, () => ({fio: '', dept: ''})) };
+
+function buildGrid() {
+  $('#grid').innerHTML = Array.from({length: MAX_TEAMS}, (_, i) =>
+    `<label class="n"><input type="radio" name="guess" id="g${i+1}" value="${i+1}" aria-label="${ORD[i+1]} yer"><span>${i+1}</span></label>`).join('');
+  $('#grid').addEventListener('change', e => {
+    st.guess = +e.target.value;
+    $('#chosen').textContent = 'Seçiminiz: ' + ORD[st.guess] + ' yer';
+  });
+}
+function renderRows() {
+  const mixed = st.kind === 'mixed';
+  $('#rows').innerHTML = st.members.map((m, i) => `
+    <div class="mrow ${mixed ? 'mixed' : ''}">
+      <div class="no">${i + 1}</div>
+      <div class="fields">
+        <input type="text" id="fio${i}" data-i="${i}" data-k="fio" value="${esc(m.fio)}" maxlength="90" autocomplete="off"
+          placeholder="${i === 0 ? 'Kapitan: Soyad Ad Ata adı' : 'Soyad Ad Ata adı'}" aria-label="${i + 1}-ci iştirakçı">
+        ${mixed ? `<input type="text" id="dep${i}" data-i="${i}" data-k="dept" value="${esc(m.dept)}" maxlength="80" autocomplete="off" placeholder="Departamenti" aria-label="${i + 1}-ci iştirakçının departamenti">` : ''}
+      </div>
+      ${st.members.length > MIN_PLAYERS ? `<button type="button" class="x" data-rm="${i}" aria-label="${i + 1}-ci sətri sil">×</button>` : '<span></span>'}
+    </div>`).join('');
+  $('#addRow').hidden = st.members.length >= MAX_PLAYERS;
+}
+$('#rows').addEventListener('input', e => {
+  const t = e.target; if (t.dataset.i == null) return;
+  st.members[+t.dataset.i][t.dataset.k] = t.value;
+});
+$('#rows').addEventListener('click', e => {
+  const b = e.target.closest('[data-rm]'); if (!b) return;
+  st.members.splice(+b.dataset.rm, 1); renderRows();
+});
+$('#addRow').addEventListener('click', () => {
+  if (st.members.length < MAX_PLAYERS) { st.members.push({fio: '', dept: ''}); renderRows(); $('#fio' + (st.members.length - 1)).focus(); }
+});
+document.querySelectorAll('input[name=kind]').forEach(r => r.addEventListener('change', () => {
+  st.kind = r.value; $('#deptWrap').hidden = st.kind !== 'dept'; renderRows();
+}));
+
+function showErr(t) { const e = $('#err'); e.textContent = t; e.hidden = !t; if (t) { $('#ok').hidden = true; e.scrollIntoView({block: 'center'}); } }
+const words = s => s.trim().split(/\s+/).filter(Boolean).length;
+
+function collect() {
+  const dept = $('#teamDept').value.trim();
+  return {
+    name: $('#teamName').value.trim(), kind: st.kind, dept: st.kind === 'dept' ? dept : '', phone: $('#phone').value.trim(),
+    members: st.members.map(m => ({fio: m.fio.trim().replace(/\s+/g, ' '), dept: st.kind === 'dept' ? dept : m.dept.trim()})).filter(m => m.fio),
+    guess: st.guess, note: $('#note').value.trim(), website: $('#website').value
+  };
+}
+function validate(t) {
+  if (!t.name) return 'Komandanın adını yazın.';
+  if (!t.kind) return 'Komandanın departament yoxsa qarışıq olduğunu seçin.';
+  if (t.kind === 'dept' && !t.dept) return 'Departamentin adını yazın.';
+  if (!t.phone) return 'Kapitanın əlaqə nömrəsini yazın.';
+  if (t.members.length < MIN_PLAYERS) return `Ən azı ${MIN_PLAYERS} iştirakçı yazın.`;
+  const bad = t.members.findIndex(m => words(m.fio) < 3);
+  if (bad >= 0) return `${bad + 1}-ci iştirakçı: soyad, ad və ata adını tam yazın.`;
+  if (t.kind === 'mixed' && t.members.some(m => !m.dept)) return 'Qarışıq komandada hər iştirakçının departamenti yazılmalıdır.';
+  if (!t.guess) return 'Proqnoz üçün yer seçin.';
+  return '';
+}
+
+$('#f').addEventListener('submit', async e => {
+  e.preventDefault(); showErr('');
+  const t = collect(), err = validate(t); if (err) return showErr(err);
+  if (!/^https:\/\/script\.google\.com\//.test(ENDPOINT)) return showErr('Qeydiyyat hələ qoşulmayıb. Təşkilatçı ilə əlaqə saxlayın.');
+  const btn = $('#go'); btn.disabled = true; btn.textContent = 'Göndərilir…';
+  try {
+    // Başlıq göstərilmir: "text/plain" sadə sorğudur və brauzer əvvəlcədən yoxlama göndərmir.
+    const res = await fetch(ENDPOINT, {method: 'POST', body: JSON.stringify(t)});
+    const j = await res.json();
+    if (!j.ok) return showErr(j.error || 'Göndərmək alınmadı.');
+    const ok = $('#ok'); ok.textContent = `“${t.name}” komandası qeydiyyata alındı. Proqnozunuz: ${ORD[t.guess]} yer.`; ok.hidden = false;
+    resetForm(); ok.scrollIntoView({block: 'center'});
+  } catch (x) {
+    showErr('Göndərmək alınmadı. İnternet bağlantısını yoxlayıb yenidən cəhd edin. Komanda artıq qeydiyyatdan keçibsə, təkrar göndərmə "bu ad artıq var" xətası verəcək.');
+  } finally { btn.disabled = false; btn.textContent = 'Komandanı qeydiyyatdan keçir'; }
+});
+function resetForm() {
+  ['#teamName', '#teamDept', '#phone', '#note', '#website'].forEach(s => $(s).value = '');
+  st.kind = ''; st.guess = 0; st.members = Array.from({length: START_ROWS}, () => ({fio: '', dept: ''}));
+  document.querySelectorAll('input[name=kind],input[name=guess]').forEach(r => r.checked = false);
+  $('#deptWrap').hidden = true; $('#chosen').textContent = ''; renderRows();
+}
+buildGrid(); renderRows();
+</script>
+</body>
+</html>
