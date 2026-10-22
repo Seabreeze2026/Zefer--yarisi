@@ -12,35 +12,43 @@
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700&family=Oswald:wght@500;600;700&display=swap">
 <style>
 :root{
-  --bg:#FBFDFE; --surface:#FFFFFF; --ink:#1B3550; --muted:#667A8E; --line:#D3DFEA;
-  --blue:#7CC6E8; --blue-ink:#1580AF; --red:#EE8A92; --green:#86C089;
-  --btn:#8CCDEA; --btn-ink:#0B2F47; --soft:#F1F8FC; --danger-bg:#FEF5F6; --ok-bg:#F3FAF3;
+  --bg:#FBF7FA; --surface:#FFFCFD; --ink:#2B2340; --muted:#6C6280; --line:#E3D8E6;
+  --blue:#B48CC9; --blue-ink:#8A3F86; --red:#EE8A92; --green:#86C089;
+  --btn:#F6BFA8; --btn-ink:#3B1F36; --soft:#F8EEF4; --danger-bg:#FEF1F1; --ok-bg:#F1F8F1;
   --gold:#FAEBC0; --silver:#EDF1F5; --bronze:#F6DCC6; --medal-ink:#2B2110;
   --display:'Oswald','Arial Narrow',Impact,sans-serif;
   --body:'Manrope','Segoe UI',system-ui,sans-serif;
   color-scheme:light;
 }
 @media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
-  --bg:#0A1522; --surface:#12263B; --ink:#E8EFF6; --muted:#9DB0C4; --line:#27405A;
-  --blue:#3CB6E6; --blue-ink:#5CC4EE; --red:#F0626F; --green:#6CBF6F;
-  --btn:#3CB6E6; --btn-ink:#06202F; --soft:#183450; --danger-bg:#3A1A22; --ok-bg:#163423;
+  --bg:#17102A; --surface:#251A3A; --ink:#F4ECF7; --muted:#BDB0CE; --line:#46345F;
+  --blue:#B48CC9; --blue-ink:#E2A6E6; --red:#F0626F; --green:#6CBF6F;
+  --btn:#F0A9A0; --btn-ink:#2A1020; --soft:#33244A; --danger-bg:#3A1A22; --ok-bg:#163423;
   --gold:#8A6D1C; --silver:#56677A; --bronze:#8A5A33; --medal-ink:#FFF4D6; color-scheme:dark}}
 
 *{box-sizing:border-box}
 html{background:var(--bg)}
-body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--body);font-size:16px;line-height:1.55;
+body{margin:0;background:transparent;color:var(--ink);font-family:var(--body);font-size:16px;line-height:1.55;
   padding-block:0 56px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
 .flag{position:fixed;inset:0 0 auto 0;height:calc(10px + env(safe-area-inset-top,0px));z-index:5;
-  background:linear-gradient(var(--blue) 0 33.4%,var(--red) 0 66.7%,var(--green) 0)}
+  background:linear-gradient(#7CC6E8 0 33.4%,#EE8A92 0 66.7%,#86C089 0)}
 .wrap{max-width:760px;margin-inline:auto;padding-top:44px}
-.mast{padding-block:28px 8px}
+/* Arxa fon: şəkil yumşaq bulanıqdır. Bulanıqlığı dəyişmək üçün aşağıdakı blur(7px) dəyərini artırıb-azaldın. */
+body::before{content:"";position:fixed;inset:-24px;z-index:-1;background:#3A2550;
+  background-image:linear-gradient(180deg,rgba(43,24,64,.66) 0%,rgba(43,24,64,.40) 55%,rgba(43,24,64,.58) 100%),url("fon.webp");
+  background-size:cover;background-position:70% center;filter:blur(7px)}
+.hero{padding:20px 0 10px;color:#fff}
+.hero h1 span{color:rgba(255,255,255,.9)}
+.hero h1{text-shadow:0 1px 14px rgba(0,0,0,.35)}
+.hero .facts{margin:18px 0 0}
+.hero .facts li{background:rgba(255,252,253,.94);color:#2B2340}
 h1{margin:0;font:700 clamp(32px,8vw,58px)/1.05 var(--display);letter-spacing:.01em;text-transform:uppercase;text-wrap:balance}
 h1 span{display:block;font:500 clamp(18px,4.6vw,26px)/1.2 var(--display);letter-spacing:.08em;color:var(--muted);margin-top:10px}
 .facts{display:flex;flex-wrap:wrap;gap:8px;margin:20px 0 28px;padding:0;list-style:none}
 .facts li{background:var(--soft);border-radius:999px;padding:6px 14px;font-size:14px;font-weight:600}
 button:focus-visible,input:focus-visible,textarea:focus-visible,.pick:has(input:focus-visible){outline:3px solid var(--blue-ink);outline-offset:2px}
 
-.block{background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:22px;margin-top:16px}
+.block{background:var(--surface);background:color-mix(in srgb,var(--surface) 95%,transparent);backdrop-filter:blur(6px);border:1px solid var(--line);border-radius:10px;padding:22px;margin-top:16px}
 .block h2{margin:0 0 4px;font:600 21px/1.2 var(--display);letter-spacing:.04em;text-transform:uppercase}
 .hint{margin:0 0 16px;color:var(--muted);font-size:14px}
 label.f{display:block;font-weight:600;font-size:14px;margin:14px 0 6px}
@@ -87,6 +95,10 @@ input::placeholder,textarea::placeholder{color:var(--muted);opacity:.75}
 .msg.err{background:var(--danger-bg);border:1px solid var(--red)}
 .msg.ok{background:var(--ok-bg);border:1px solid var(--green)}
 .msg[hidden]{display:none}
+.thanks{text-align:center;padding-block:36px;border-color:var(--green)}
+.thanks[hidden],#f[hidden]{display:none}
+.thanks .big{margin:8px 0 16px;font:600 clamp(22px,5vw,30px)/1.25 var(--display);letter-spacing:.03em;text-wrap:balance}
+.thanks:focus{outline:none}
 @media (max-width:560px){
   .kinds{grid-template-columns:1fr}
   .mrow.mixed .fields{grid-template-columns:1fr}
@@ -98,7 +110,7 @@ input::placeholder,textarea::placeholder{color:var(--muted);opacity:.75}
 <body>
 <div class="flag" aria-hidden="true"></div>
 <div class="wrap">
-  <header class="mast">
+  <header class="hero">
     <h1>Zəfər gününə həsr olunmuş intellektual yarış<span>Komanda qeydiyyat formu</span></h1>
     <ul class="facts">
       <li>Tarix: 5 noyabr</li>
@@ -122,8 +134,8 @@ input::placeholder,textarea::placeholder{color:var(--muted);opacity:.75}
         <label class="f" for="teamDept">Departamentin adı</label>
         <input type="text" id="teamDept" maxlength="80" autocomplete="off" placeholder="Departamentin tam adı">
       </div>
-      <label class="f" for="phone">Kapitanın əlaqə nömrəsi</label>
-      <input type="tel" id="phone" maxlength="30" autocomplete="off" placeholder="Mobil və ya daxili nömrə">
+      <label class="f" for="phone">Kapitanın əlaqə nömrəsi və ya e-poçt ünvanı</label>
+      <input type="text" id="phone" maxlength="60" autocomplete="off" placeholder="Mobil nömrə və ya e-poçt">
     </section>
 
     <section class="block">
@@ -149,12 +161,20 @@ input::placeholder,textarea::placeholder{color:var(--muted);opacity:.75}
       <div class="msg ok" id="ok" role="status" hidden></div>
     </section>
   </form>
+
+  <section class="block thanks" id="thanks" tabindex="-1" hidden>
+    <h2>Qeydiyyat üçün təşəkkürlər!</h2>
+    <p class="big">İştirakınızı səbirsizliklə gözləyirik.</p>
+    <p class="hint"><b id="tName"></b> komandası qeydiyyata alındı. Proqnozunuz: <b id="tGuess"></b>.</p>
+    <p class="hint">Tarix: 5 noyabr, saat 19:00.</p>
+    <button type="button" class="ghost" id="again">Başqa komanda qeydiyyatdan keçir</button>
+  </section>
 </div>
 
 <script>
 /* ===== Ayarlar ===== */
 // Apps Script veb-tətbiqinin ünvanı (README.md-də 4-cü addım). "/exec" ilə bitir.
-const ENDPOINT = "https://script.google.com/macros/s/AKfycbymRwBcwwC7P_DXOeJt86qKwBMyhoMvH1rHkiszXLsthSN-3j3SfIWu2VVTF4CDCvmA/exec";
+const ENDPOINT = "BURAYA_APPS_SCRIPT_UNVANINI_YAPISDIRIN";
 const MAX_TEAMS = 25, MIN_PLAYERS = 6, MAX_PLAYERS = 8, START_ROWS = 6;
 /* =================== */
 
@@ -215,7 +235,7 @@ function validate(t) {
   if (!t.name) return 'Komandanın adını yazın.';
   if (!t.kind) return 'Komandanın departament yoxsa qarışıq olduğunu seçin.';
   if (t.kind === 'dept' && !t.dept) return 'Departamentin adını yazın.';
-  if (!t.phone) return 'Kapitanın əlaqə nömrəsini yazın.';
+  if (!t.phone) return 'Kapitanın əlaqə nömrəsini və ya e-poçt ünvanını yazın.';
   if (t.members.length < MIN_PLAYERS) return `Ən azı ${MIN_PLAYERS} iştirakçı yazın.`;
   const bad = t.members.findIndex(m => words(m.fio) < 3);
   if (bad >= 0) return `${bad + 1}-ci iştirakçı: soyad, ad və ata adını tam yazın.`;
@@ -234,8 +254,9 @@ $('#f').addEventListener('submit', async e => {
     const res = await fetch(ENDPOINT, {method: 'POST', body: JSON.stringify(t)});
     const j = await res.json();
     if (!j.ok) return showErr(j.error || 'Göndərmək alınmadı.');
-    const ok = $('#ok'); ok.textContent = `“${t.name}” komandası qeydiyyata alındı. Proqnozunuz: ${ORD[t.guess]} yer.`; ok.hidden = false;
-    resetForm(); ok.scrollIntoView({block: 'center'});
+    $('#tName').textContent = t.name; $('#tGuess').textContent = ORD[t.guess] + ' yer';
+    resetForm(); $('#f').hidden = true; $('#thanks').hidden = false;
+    window.scrollTo({top: 0}); $('#thanks').focus();
   } catch (x) {
     showErr('Göndərmək alınmadı. İnternet bağlantısını yoxlayıb yenidən cəhd edin. Komanda artıq qeydiyyatdan keçibsə, təkrar göndərmə "bu ad artıq var" xətası verəcək.');
   } finally { btn.disabled = false; btn.textContent = 'Komandanı qeydiyyatdan keçir'; }
@@ -246,6 +267,7 @@ function resetForm() {
   document.querySelectorAll('input[name=kind],input[name=guess]').forEach(r => r.checked = false);
   $('#deptWrap').hidden = true; $('#chosen').textContent = ''; renderRows();
 }
+$('#again').addEventListener('click', () => { $('#thanks').hidden = true; $('#f').hidden = false; window.scrollTo({top: 0}); $('#teamName').focus(); });
 buildGrid(); renderRows();
 </script>
 </body>
