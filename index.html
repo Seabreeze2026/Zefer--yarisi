@@ -95,6 +95,12 @@ input::placeholder,textarea::placeholder{color:var(--muted);opacity:.75}
 .msg.err{background:var(--danger-bg);border:1px solid var(--red)}
 .msg.ok{background:var(--ok-bg);border:1px solid var(--green)}
 .msg[hidden]{display:none}
+.rules{margin:18px 0 0;overflow-wrap:anywhere}
+.rules a,.contact a{color:var(--blue-ink);font-weight:600}
+.contact a[href^="tel:"]{white-space:nowrap}
+.contact{margin-top:20px;padding:16px 18px;border:1px solid var(--line);border-radius:10px;background:var(--soft);font-size:15px}
+.contact p{margin:0 0 8px;overflow-wrap:anywhere}
+.contact .sign{margin:12px 0 0;color:var(--muted)}
 .thanks{text-align:center;padding-block:36px;border-color:var(--green)}
 .thanks[hidden],#f[hidden]{display:none}
 .thanks .big{margin:8px 0 16px;font:600 clamp(22px,5vw,30px)/1.25 var(--display);letter-spacing:.03em;text-wrap:balance}
@@ -116,6 +122,7 @@ input::placeholder,textarea::placeholder{color:var(--muted);opacity:.75}
       <li>Tarix: 5 noyabr</li>
       <li>Komanda 6-8 nəfər</li>
       <li>Saat: 19:00</li>
+      <li>Suallar azərbaycan və rus dillərində səsləndiriləcək.</li>
     </ul>
   </header>
 
@@ -155,7 +162,14 @@ input::placeholder,textarea::placeholder{color:var(--muted);opacity:.75}
     <section class="block">
       <label class="f" for="note" style="margin-top:0">Əlavə qeyd <span style="font-weight:500;color:var(--muted)">(vacib deyil)</span></label>
       <textarea id="note" maxlength="400" placeholder="Təşkilatçılara çatdırmaq istədiyiniz məlumat"></textarea>
+      <p class="rules"><b>Oyunun qaydaları:</b> <a href="https://shorturl.at/h2hQJ" target="_blank" rel="noopener noreferrer">https://shorturl.at/h2hQJ</a></p>
       <div class="hp" aria-hidden="true"><label>Bu xananı boş buraxın <input type="text" id="website" tabindex="-1" autocomplete="off"></label></div>
+      <div class="contact">
+        <p><b>Suallarınız var? Bizimlə əlaqə saxlayın.</b></p>
+        <p>Mobil: <a href="tel:+994992012761">+994 99 201 27 61</a> / <a href="tel:+994992041022">+994 99 204 10 22</a><br>
+        E-poçt: <a href="mailto:hr.info@seabreeze.az">hr.info@seabreeze.az</a></p>
+        <p class="sign">Hörmətlə,<br>İnsan Resursları Departamenti</p>
+      </div>
       <button type="submit" class="go" id="go">Komandanı qeydiyyatdan keçir</button>
       <div class="msg err" id="err" role="alert" hidden></div>
       <div class="msg ok" id="ok" role="status" hidden></div>
@@ -174,7 +188,7 @@ input::placeholder,textarea::placeholder{color:var(--muted);opacity:.75}
 <script>
 /* ===== Ayarlar ===== */
 // Apps Script veb-tətbiqinin ünvanı (README.md-də 4-cü addım). "/exec" ilə bitir.
-const ENDPOINT = "https://script.google.com/macros/s/AKfycbymRwBcwwC7P_DXOeJt86qKwBMyhoMvH1rHkiszXLsthSN-3j3SfIWu2VVTF4CDCvmA/exec";
+const ENDPOINT = "BURAYA_APPS_SCRIPT_UNVANINI_YAPISDIRIN";
 const MAX_TEAMS = 25, MIN_PLAYERS = 6, MAX_PLAYERS = 8, START_ROWS = 6;
 /* =================== */
 
